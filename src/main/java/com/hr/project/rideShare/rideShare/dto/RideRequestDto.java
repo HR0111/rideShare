@@ -1,0 +1,39 @@
+package com.hr.project.rideShare.rideShare.dto;
+
+
+import com.hr.project.rideShare.rideShare.entities.Rider;
+import com.hr.project.rideShare.rideShare.enums.PaymentMethod;
+import com.hr.project.rideShare.rideShare.enums.RideRequestStatus;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.locationtech.jts.geom.Point;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RideRequestDto {
+
+    private Long id;
+
+    private PointDto pickUpLocation;
+
+    private PointDto dropOffLocation;
+
+    private LocalDateTime requestedTime;
+
+    private RiderDto rider;
+
+    private PaymentMethod paymentMethod;
+
+    private RideRequestStatus rideRequestStatus;
+
+
+
+
+
+}
