@@ -6,6 +6,8 @@ import com.hr.project.rideShare.rideShare.dto.RideRequestDto;
 import com.hr.project.rideShare.rideShare.dto.RiderDto;
 import com.hr.project.rideShare.rideShare.entities.Rider;
 import com.hr.project.rideShare.rideShare.entities.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -20,10 +22,10 @@ public interface RiderService {
 
     RiderDto getMyProfile();
 
-    List<RideDto> getAllMyRides();
+    Page<RideDto> getAllMyRides(PageRequest pageRequest);
 
     Rider createNewRider(User user);
 
-    Rider getcurrentRider();
+    Rider getcurrentRider( );
 
 }

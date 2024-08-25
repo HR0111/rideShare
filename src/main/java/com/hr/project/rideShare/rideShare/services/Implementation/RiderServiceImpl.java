@@ -4,19 +4,22 @@ import com.hr.project.rideShare.rideShare.dto.DriverDto;
 import com.hr.project.rideShare.rideShare.dto.RideDto;
 import com.hr.project.rideShare.rideShare.dto.RideRequestDto;
 import com.hr.project.rideShare.rideShare.dto.RiderDto;
-import com.hr.project.rideShare.rideShare.entities.Driver;
-import com.hr.project.rideShare.rideShare.entities.RideRequest;
-import com.hr.project.rideShare.rideShare.entities.Rider;
-import com.hr.project.rideShare.rideShare.entities.User;
+import com.hr.project.rideShare.rideShare.entities.*;
 import com.hr.project.rideShare.rideShare.enums.RideRequestStatus;
+import com.hr.project.rideShare.rideShare.enums.RideStatus;
 import com.hr.project.rideShare.rideShare.exceptions.ResourceNotFoundException;
+import com.hr.project.rideShare.rideShare.repositories.DriverRepository;
 import com.hr.project.rideShare.rideShare.repositories.RideRequestRepository;
 import com.hr.project.rideShare.rideShare.repositories.RiderRepository;
+import com.hr.project.rideShare.rideShare.services.DriverService;
+import com.hr.project.rideShare.rideShare.services.RideService;
 import com.hr.project.rideShare.rideShare.services.RiderService;
 import com.hr.project.rideShare.rideShare.stratergies.RideStratergyManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +31,10 @@ public class RiderServiceImpl implements RiderService {
 
     private final ModelMapper modelMapper;
     private final RideStratergyManager rideStratergyManager;
+    private final RideService rideService;
+    private final DriverService driverService;
     private final RiderRepository riderRepository;
+    private final DriverRepository driverRepository;
     private final RideRequestRepository rideRequestRepository;
 
     @Transactional
@@ -58,22 +64,71 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public RideDto cancelRide(Long rideId) {
-        return null;
+
+        Rider rider = getcurrentRider();
+        Ride ride = rideService.getRideById(rideId);
+
+        if(!rider.equals(ride.getRider())){
+            throw new RuntimeException("Rider cannot cancel ride because its not the same rider who started the ride"+rideId);
+
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.CONFIRMED)){
+            throw new RuntimeException("RIde cannot cancel ride"+ride.getRideStatus());
+
+        }
+
+        Ride savedRide = rideService.updateRideStatus(ride,RideStatus.CANCELLED);
+        driverService.updateDriverAvailability(ride.getDriver(), true);
+
+
+
+
+        return modelMapper.map(savedRide,RideDto.class);
     }
 
     @Override
     public DriverDto rateDriver(Long rideId, Integer rating) {
-        return null;
+
+
+        Ride ride = rideService.getRideById(rideId);
+        if(ride == null){
+            throw new RuntimeException("Ride not found with id: " + rideId);
+        }
+
+        Driver driver = driverService.getCurrentDriver();
+
+        Double driverRating = driver.getRating();
+
+        Double newRating  = (driverRating == 0) ? rating.doubleValue() : (rating+driverRating) / 2;
+
+
+        // Update the driver's rating
+        driver.setRating(newRating);
+
+        // Save the updated driver
+        driverRepository.save(driver);
+
+        return modelMapper.map(driver , DriverDto.class);
     }
 
     @Override
     public RiderDto getMyProfile() {
-        return null;
+
+        Rider currentrider = getcurrentRider();
+        return modelMapper.map(currentrider,RiderDto.class);
+
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
+
+        Rider currentrider = getcurrentRider();
+        return rideService.getAllRidesOfRider(currentrider.getId(),pageRequest).map(
+                ride -> modelMapper.map(ride , RideDto.class)
+        );
+
+
     }
 
     @Override

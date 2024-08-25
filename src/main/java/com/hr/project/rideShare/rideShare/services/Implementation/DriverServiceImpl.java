@@ -15,6 +15,8 @@ import com.hr.project.rideShare.rideShare.services.RideRequestService;
 import com.hr.project.rideShare.rideShare.services.RideService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,9 +45,9 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeException("Driver cannot accept ride due to unavailability");
         }
 
-        currentDriver.setAvailable(false);
-        Driver saveddriver = driverRepository.save(currentDriver);
-
+//        currentDriver.setAvailable(false);
+//        Driver saveddriver = driverRepository.save(currentDriver);
+        Driver saveddriver = updateDriverAvailability(currentDriver , false);
 
         Ride ride =  rideService.createNewRide(rideRequest , saveddriver);
 
@@ -54,7 +56,28 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public RideDto cancelRide(Long rideId) {
-        return null;
+
+        Ride ride = rideService.getRideById(rideId);
+
+        Driver driver = getCurrentDriver();
+
+        if(!ride.getDriver().equals(driver)){
+            throw new RuntimeException("Driver cannot cancel ride because its not the same driver who started the ride"+driver);
+
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.CONFIRMED)){
+            throw new RuntimeException("Driver cannot cancel ride because its not started the ride yet"+driver);
+
+        }
+
+        rideService.updateRideStatus(ride,RideStatus.CANCELLED);
+//        driver.setAvailable(true);
+//        driverRepository.save(driver);
+             updateDriverAvailability(driver , true);
+
+        return modelMapper.map(ride , RideDto.class);
+
     }
 
     @Override
@@ -95,17 +118,34 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public DriverDto getMyProfile() {
-        return null;
+
+        Driver currentDriver = getCurrentDriver();
+        return modelMapper.map(currentDriver,DriverDto.class);
+
     }
 
     @Override
-    public List<RideDto> getAllMyRides() {
-        return List.of();
+    public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
+
+        Driver currentdriver = getCurrentDriver();
+        return rideService.getAllRidesOfDriver(currentdriver.getId(),pageRequest).map(
+                ride -> modelMapper.map(ride , RideDto.class)
+        );
+
     }
 
     @Override
     public Driver getCurrentDriver() {
         return driverRepository.findById(2L).orElseThrow(()->
                 new ResourceNotFoundException("Current Driver not found with id "+2));
+    }
+
+    @Override
+    public Driver updateDriverAvailability(Driver driver, boolean available) {
+
+//        Driver driver = driverRepository.findById(driverId).orElseThrow(()->new ResourceNotFoundException("Driver not found with id"+driverId));
+        driver.setAvailable(available);
+        return driverRepository.save(driver);
+
     }
 }
