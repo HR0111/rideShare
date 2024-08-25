@@ -1,7 +1,6 @@
 package com.hr.project.rideShare.rideShare.stratergies.impl;
 
 
-import com.hr.project.rideShare.rideShare.dto.RideRequestDto;
 import com.hr.project.rideShare.rideShare.entities.RideRequest;
 import com.hr.project.rideShare.rideShare.services.DistanceService;
 import com.hr.project.rideShare.rideShare.stratergies.RideFareCalculationStrategy;

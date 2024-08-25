@@ -1,7 +1,6 @@
 package com.hr.project.rideShare.rideShare.entities;
 
 import com.hr.project.rideShare.rideShare.enums.PaymentMethod;
-import com.hr.project.rideShare.rideShare.enums.RideRequestStatus;
 import com.hr.project.rideShare.rideShare.enums.RideStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -44,6 +43,7 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     private RideStatus rideStatus;
 
+    private  String otp;
     private Double fare;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
