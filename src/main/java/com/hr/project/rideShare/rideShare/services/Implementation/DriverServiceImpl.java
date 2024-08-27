@@ -11,6 +11,7 @@ import com.hr.project.rideShare.rideShare.enums.RideStatus;
 import com.hr.project.rideShare.rideShare.exceptions.ResourceNotFoundException;
 import com.hr.project.rideShare.rideShare.repositories.DriverRepository;
 import com.hr.project.rideShare.rideShare.services.DriverService;
+import com.hr.project.rideShare.rideShare.services.PaymentService;
 import com.hr.project.rideShare.rideShare.services.RideRequestService;
 import com.hr.project.rideShare.rideShare.services.RideService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Provider;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,10 +29,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DriverServiceImpl implements DriverService {
 
-    private  final RideRequestService rideRequestService;
+    private final RideRequestService rideRequestService;
     private final DriverRepository driverRepository;
     private final RideService rideService;
     private final ModelMapper modelMapper;
+    private final PaymentService paymentService;
 
     @Override
     public RideDto acceptRide(Long rideRequestId) {
@@ -98,17 +102,37 @@ public class DriverServiceImpl implements DriverService {
             throw new RuntimeException("Otp is not valid"+otp);
         }
 
+
         ride.setStartedAt(LocalDateTime.now());
-
-
         Ride savedRide = rideService.updateRideStatus(ride , RideStatus.ONGOING);
+
+        paymentService.createNewPayment(savedRide);
 
         return modelMapper.map(savedRide , RideDto.class);
     }
 
     @Override
+    @Transactional
     public RideDto endRide(Long rideId) {
-        return null;
+
+        Ride ride =rideService.getRideById(rideId);
+        Driver driver = getCurrentDriver();
+
+        if(!ride.getDriver().equals(driver)){
+            throw new RuntimeException("Driver cannot start a ride as he  has not accpeted it earlier");
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.ONGOING)){
+            throw new RuntimeException("Driver status is not OnGoing hence cannot be ended , status: "+ride.getRideStatus());
+        }
+
+        ride.setEndedAt(LocalDateTime.now());
+        Ride savedride =  rideService.updateRideStatus(ride, RideStatus.ENDED);
+
+        updateDriverAvailability(driver , true);
+        paymentService.processPayment(ride);
+
+        return modelMapper.map(savedride , RideDto.class);
     }
 
     @Override
@@ -128,7 +152,7 @@ public class DriverServiceImpl implements DriverService {
     public Page<RideDto> getAllMyRides(PageRequest pageRequest) {
 
         Driver currentdriver = getCurrentDriver();
-        return rideService.getAllRidesOfDriver(currentdriver.getId(),pageRequest).map(
+        return rideService.getAllRidesOfDriver(currentdriver,pageRequest).map(
                 ride -> modelMapper.map(ride , RideDto.class)
         );
 
