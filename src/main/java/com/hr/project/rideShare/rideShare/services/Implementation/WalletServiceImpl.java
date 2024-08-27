@@ -51,7 +51,11 @@ public class WalletServiceImpl implements WalletService {
                 .transactionId(transactionId).ride(ride).wallet(wallet).transactionType(TransactionType.DEBIT)
                 .transactionMethod(trasactionMethod).amount(amount).build();
 
-        walletTransactionService.createNewWalletTransaction(walletTransaction);
+//        walletTransactionService.createNewWalletTransaction(walletTransaction);
+        wallet.getTransactions().add(walletTransaction);
+//        This line adds the walletTransaction to the list of transactions associated with the wallet object.
+//                It is typically an in-memory operation that updates the s
+//        tate of the wallet by including the new transaction in its list of transactions.
 
         return walletRepository.save(wallet);
 

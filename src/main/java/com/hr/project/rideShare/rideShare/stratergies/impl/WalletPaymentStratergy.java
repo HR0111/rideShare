@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class WalletPaymentStratergy implements PaymentStratergy {
 
     private final WalletService walletService;
-//    private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
 
     @Override
