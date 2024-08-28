@@ -1,6 +1,7 @@
 package com.hr.project.rideShare.rideShare.services.Implementation;
 
 import com.hr.project.rideShare.rideShare.dto.DriverDto;
+import com.hr.project.rideShare.rideShare.dto.DriverRideDto;
 import com.hr.project.rideShare.rideShare.dto.RideDto;
 import com.hr.project.rideShare.rideShare.dto.RiderDto;
 import com.hr.project.rideShare.rideShare.entities.Driver;
@@ -10,10 +11,7 @@ import com.hr.project.rideShare.rideShare.enums.RideRequestStatus;
 import com.hr.project.rideShare.rideShare.enums.RideStatus;
 import com.hr.project.rideShare.rideShare.exceptions.ResourceNotFoundException;
 import com.hr.project.rideShare.rideShare.repositories.DriverRepository;
-import com.hr.project.rideShare.rideShare.services.DriverService;
-import com.hr.project.rideShare.rideShare.services.PaymentService;
-import com.hr.project.rideShare.rideShare.services.RideRequestService;
-import com.hr.project.rideShare.rideShare.services.RideService;
+import com.hr.project.rideShare.rideShare.services.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -34,9 +32,10 @@ public class DriverServiceImpl implements DriverService {
     private final RideService rideService;
     private final ModelMapper modelMapper;
     private final PaymentService paymentService;
+    private final RatingService ratingService;
 
     @Override
-    public RideDto acceptRide(Long rideRequestId) {
+    public DriverRideDto acceptRide(Long rideRequestId) {
         RideRequest rideRequest = rideRequestService.findRideById(rideRequestId);
 
         if(!rideRequest.getRideRequestStatus().equals(RideRequestStatus.PENDING)){
@@ -55,7 +54,7 @@ public class DriverServiceImpl implements DriverService {
 
         Ride ride =  rideService.createNewRide(rideRequest , saveddriver);
 
-        return modelMapper.map(ride , RideDto.class);
+        return modelMapper.map(ride , DriverRideDto.class);
     }
 
     @Override
@@ -85,7 +84,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public RideDto startRide(Long rideId , String otp) {
+    public DriverRideDto startRide(Long rideId , String otp) {
 
         Ride ride =rideService.getRideById(rideId);
         Driver driver = getCurrentDriver();
@@ -107,8 +106,9 @@ public class DriverServiceImpl implements DriverService {
         Ride savedRide = rideService.updateRideStatus(ride , RideStatus.ONGOING);
 
         paymentService.createNewPayment(savedRide);
+        ratingService.createNewRating(savedRide);
 
-        return modelMapper.map(savedRide , RideDto.class);
+        return modelMapper.map(savedRide , DriverRideDto.class);
     }
 
     @Override
@@ -137,7 +137,19 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public RiderDto rateRider(Long rideId, Integer rating) {
-        return null;
+
+        Ride ride = rideService.getRideById(rideId);
+        Driver driver = getCurrentDriver();
+
+        if(!driver.equals(driver)){
+            throw new RuntimeException("Driver is not the owner of this Ride");
+        }
+
+        if(!ride.getRideStatus().equals(RideStatus.ENDED)){
+            throw new RuntimeException("Driver status is not Ended hence cannot be start rating , status: "+ride.getRideStatus());
+        }
+
+        return  ratingService.rateRider(ride,rating);
     }
 
     @Override
@@ -171,5 +183,10 @@ public class DriverServiceImpl implements DriverService {
         driver.setAvailable(available);
         return driverRepository.save(driver);
 
+    }
+
+    @Override
+    public Driver createNewDriver(Driver driver) {
+        return driverRepository.save(driver);
     }
 }

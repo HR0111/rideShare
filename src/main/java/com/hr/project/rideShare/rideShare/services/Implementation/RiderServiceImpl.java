@@ -12,6 +12,7 @@ import com.hr.project.rideShare.rideShare.repositories.DriverRepository;
 import com.hr.project.rideShare.rideShare.repositories.RideRequestRepository;
 import com.hr.project.rideShare.rideShare.repositories.RiderRepository;
 import com.hr.project.rideShare.rideShare.services.DriverService;
+import com.hr.project.rideShare.rideShare.services.RatingService;
 import com.hr.project.rideShare.rideShare.services.RideService;
 import com.hr.project.rideShare.rideShare.services.RiderService;
 import com.hr.project.rideShare.rideShare.stratergies.RideStratergyManager;
@@ -36,6 +37,7 @@ public class RiderServiceImpl implements RiderService {
     private final RiderRepository riderRepository;
     private final DriverRepository driverRepository;
     private final RideRequestRepository rideRequestRepository;
+    private final RatingService ratingService;
 
     @Transactional
     @Override
@@ -91,25 +93,38 @@ public class RiderServiceImpl implements RiderService {
     public DriverDto rateDriver(Long rideId, Integer rating) {
 
 
+//        Ride ride = rideService.getRideById(rideId);
+//        if(ride == null){
+//            throw new RuntimeException("Ride not found with id: " + rideId);
+//        }
+//
+//        Driver driver = driverService.getCurrentDriver();
+//
+//        Double driverRating = driver.getRating();
+//
+//        Double newRating  = (driverRating == 0) ? rating.doubleValue() : (rating+driverRating) / 2;
+//
+//
+//        // Update the driver's rating
+//        driver.setRating(newRating);
+//
+//        // Save the updated driver
+//        driverRepository.save(driver);
+//
+//        return modelMapper.map(driver , DriverDto.class);
+
         Ride ride = rideService.getRideById(rideId);
-        if(ride == null){
-            throw new RuntimeException("Ride not found with id: " + rideId);
+        Rider rider = getcurrentRider();
+
+        if(!rider.equals(rider)){
+            throw new RuntimeException("Driver is not the owner of this Ride");
         }
 
-        Driver driver = driverService.getCurrentDriver();
+        if(!ride.getRideStatus().equals(RideStatus.ENDED)){
+            throw new RuntimeException("Driver status is not Ended hence cannot be start rating , status: "+ride.getRideStatus());
+        }
 
-        Double driverRating = driver.getRating();
-
-        Double newRating  = (driverRating == 0) ? rating.doubleValue() : (rating+driverRating) / 2;
-
-
-        // Update the driver's rating
-        driver.setRating(newRating);
-
-        // Save the updated driver
-        driverRepository.save(driver);
-
-        return modelMapper.map(driver , DriverDto.class);
+        return  ratingService.rateDriver(ride,rating);
     }
 
     @Override

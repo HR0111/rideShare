@@ -13,6 +13,6 @@ public interface AuthService {
 
     UserDto signup(SignupDto signupDto);
 
-    DriverDto onboardNewDriver(Long userId);
+    DriverDto onboardNewDriver(Long userId , String vechicleId);
 
 }

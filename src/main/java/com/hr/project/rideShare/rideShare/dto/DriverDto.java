@@ -14,7 +14,7 @@ public class DriverDto {
     private Double rating;
 
     private Boolean available;
-    private String vehicalId;
+    private String vehicleId;
 
 
 
