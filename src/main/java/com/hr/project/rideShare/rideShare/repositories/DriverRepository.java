@@ -1,12 +1,14 @@
 package com.hr.project.rideShare.rideShare.repositories;
 
 import com.hr.project.rideShare.rideShare.entities.Driver;
+import com.hr.project.rideShare.rideShare.entities.User;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Long> {
@@ -30,4 +32,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
             "LIMIT 10 " , nativeQuery = true)
     List<Driver> findTenNearByTopRatedDrivers(Point pickUpLocation);
 
+    Optional<Driver> findByUser(User user);
 }

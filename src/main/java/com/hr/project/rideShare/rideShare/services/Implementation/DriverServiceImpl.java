@@ -7,6 +7,7 @@ import com.hr.project.rideShare.rideShare.dto.RiderDto;
 import com.hr.project.rideShare.rideShare.entities.Driver;
 import com.hr.project.rideShare.rideShare.entities.Ride;
 import com.hr.project.rideShare.rideShare.entities.RideRequest;
+import com.hr.project.rideShare.rideShare.entities.User;
 import com.hr.project.rideShare.rideShare.enums.RideRequestStatus;
 import com.hr.project.rideShare.rideShare.enums.RideStatus;
 import com.hr.project.rideShare.rideShare.exceptions.ResourceNotFoundException;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -172,8 +174,11 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver getCurrentDriver() {
-        return driverRepository.findById(2L).orElseThrow(()->
-                new ResourceNotFoundException("Current Driver not found with id "+2));
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return driverRepository.findByUser(user).orElseThrow(()->
+                new ResourceNotFoundException("Current Driver not associated with user with id "+user.getId()));
     }
 
     @Override

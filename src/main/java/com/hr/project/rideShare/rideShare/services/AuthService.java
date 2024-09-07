@@ -8,11 +8,12 @@ import com.hr.project.rideShare.rideShare.dto.UserDto;
 
 public interface AuthService {
 
-    String login(String email , String password);  //  return tokens
+    String[] login(String email , String password);  //  return tokens
 
 
     UserDto signup(SignupDto signupDto);
 
     DriverDto onboardNewDriver(Long userId , String vechicleId);
 
+    String refreshToken(String refreshToken);
 }
