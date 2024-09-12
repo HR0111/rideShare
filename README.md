@@ -27,7 +27,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### RiderController
 
-![RiderController Screenshot](screenshots/RiderController.png)
+![RiderController Screenshot](C:\Users\heman\OneDrive\Pictures\Screenshots/riderController.png)
 
 - **Request a Ride**: `POST /riders/requestRide` - Request a new ride.
 - **Cancel a Ride**: `POST /riders/cancelRide/{rideId}` - Cancel an ongoing ride.
@@ -37,7 +37,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### DriverController
 
-![DriverController Screenshot](screenshots/DriverController.png)
+![DriverController Screenshot](C:\Users\heman\OneDrive\Pictures\Screenshots/driverController.png)
 
 - **Accept a Ride Request**: `POST /drivers/acceptRide/{rideRequestId}` - Accept a ride request.
 - **Start a Ride**: `POST /drivers/startRide/{rideRequestId}` - Start a ride with OTP verification.
@@ -49,7 +49,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### AuthController
 
-![AuthController Screenshot](screenshots/AuthController.png)
+![AuthController Screenshot](C:\Users\heman\OneDrive\Pictures\Screenshots/authController.png)
 
 - **Sign Up**: `POST /auth/signup` - Create a new user account.
 - **Login**: `POST /auth/login` - Authenticate and obtain tokens. Tokens are stored in cookies.
@@ -60,16 +60,16 @@ This project is a comprehensive ride-sharing application with features for both 
 
 1. **Clone the repository:**
 
-   git clone https://github.com/your-username/rideShare.git
+   git clone https://github.com/HR0111/rideShare.git
 
 2. Navigate to the project directory:
    
-  cd rideShare
+   cd rideShare
 
-4. Install dependencies:
+3. Install dependencies:
 
-  ./mvnw install
+   ./mvnw install
   
-5. Run the application:
+4. Run the application:
 
-  ./mvnw spring-boot:run
+   ./mvnw spring-boot:run
