@@ -49,7 +49,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### AuthController
 
-![AuthController Screenshot](C:\Users\heman\OneDrive\Pictures\Screenshots/authController.png)
+![AuthController Screenshot](C:\Users\heman\OneDrive\Pictures\Screenshots/driverController.png)
 
 - **Sign Up**: `POST /auth/signup` - Create a new user account.
 - **Login**: `POST /auth/login` - Authenticate and obtain tokens. Tokens are stored in cookies.
