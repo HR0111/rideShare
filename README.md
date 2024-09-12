@@ -27,7 +27,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### RiderController
 
-![RiderController Screenshot](C:\Users\heman\Downloads\DSBDA Ass\Repo/riderController.png)
+![RiderController Screenshot](D:Repo/riderController.png)
 
 - **Request a Ride**: `POST /riders/requestRide` - Request a new ride.
 - **Cancel a Ride**: `POST /riders/cancelRide/{rideId}` - Cancel an ongoing ride.
@@ -37,7 +37,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### DriverController
 
-![DriverController Screenshot](C:\Users\heman\Downloads\DSBDA Ass\Repo/driverController.png)
+![DriverController Screenshot](D:\Repo/driverController.png)
 
 - **Accept a Ride Request**: `POST /drivers/acceptRide/{rideRequestId}` - Accept a ride request.
 - **Start a Ride**: `POST /drivers/startRide/{rideRequestId}` - Start a ride with OTP verification.
@@ -49,7 +49,7 @@ This project is a comprehensive ride-sharing application with features for both 
 
 ### AuthController
 
-![AuthController Screenshot](C:\Users\heman\Downloads\DSBDA Ass\Repo/driverController.png)
+![AuthController Screenshot](D:Repo/authController.png)
 
 - **Sign Up**: `POST /auth/signup` - Create a new user account.
 - **Login**: `POST /auth/login` - Authenticate and obtain tokens. Tokens are stored in cookies.
