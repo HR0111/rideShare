@@ -24,6 +24,7 @@ import java.util.logging.Handler;
 
 @Configuration
 @RequiredArgsConstructor
+
 public class JWTAuthFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;

@@ -24,7 +24,7 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
 //        if(request.getURI().getPath().contains("v3/api-docs")) return body;
 //        if(request.getURI().getPath().contains("/actuator")) return body;
 
-        List<String> allowrRoutes = List.of("/actuator" , "v3/api-docs");
+        List<String> allowrRoutes = List.of("/actuator" , "v3/api-docs" );
         boolean isAllowed = allowrRoutes.stream().anyMatch(route -> request.getURI().getPath().contains(route));
 
         if(body instanceof ApiResponse<?> || isAllowed) {
@@ -33,4 +33,8 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
 
         return new ApiResponse<>(body);
     }
+
+
+
+
 }
